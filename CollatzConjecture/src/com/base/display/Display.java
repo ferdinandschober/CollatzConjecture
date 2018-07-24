@@ -2,6 +2,8 @@ package com.base.display;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
+
+import com.base.Input;
 public class Display
 {
     private Frame mainFrame;
@@ -14,6 +16,8 @@ public class Display
     BufferStrategy bs;
     
     private static Font monoFont = new Font("Monospaced", Font.PLAIN, 14);
+    
+    public Input input;
     
     public Display()
     {
@@ -31,6 +35,16 @@ public class Display
         canvas.createBufferStrategy(2);
         bs = canvas.getBufferStrategy();
         g = bs.getDrawGraphics();
+        
+        input = new Input();
+        canvas.addKeyListener(input);
+        canvas.addFocusListener(input);
+        canvas.addMouseListener(input);
+        canvas.addMouseMotionListener(input);
+        
+        canvas.setFocusable(true);
+        canvas.requestFocus();
+        
     }
 
     public void drawFrameBuffer() {
@@ -80,5 +94,10 @@ public class Display
         if(s!=null){
             g.drawString(s, x, y);
         }
+    }
+    
+    public Input getInput()
+    {
+    	return input;
     }
 }
