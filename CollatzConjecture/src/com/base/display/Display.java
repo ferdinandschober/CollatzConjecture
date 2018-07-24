@@ -6,13 +6,13 @@ import java.awt.image.*;
 import com.base.Input;
 public class Display
 {
-    private Frame mainFrame;
+    private Frame frame;
     private Canvas canvas;
     private Graphics g;
-    public static final int WIDTH = 856;
-    public static final int HEIGHT = 480;
-    BufferedImage localBufferedImage = new BufferedImage(WIDTH,HEIGHT,1);
-    int[] imageData = ((DataBufferInt) localBufferedImage.getRaster().getDataBuffer()).getData();
+    public static int WIDTH = 856;
+    public static int HEIGHT = 480;
+    BufferedImage frameBuffer = new BufferedImage(WIDTH,HEIGHT,1);
+    int[] imageData = ((DataBufferInt) frameBuffer.getRaster().getDataBuffer()).getData();
     BufferStrategy bs;
     
     private static Font monoFont = new Font("Monospaced", Font.PLAIN, 14);
@@ -21,17 +21,17 @@ public class Display
     
     public Display()
     {
-        mainFrame = new Frame("Display");
-        mainFrame.addWindowListener(new WindowAdapter() {
+        frame = new Frame("Display");
+        frame.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent windowEvent){
                     System.exit(0);
                 }        
             });  
         canvas = new Canvas();
-        canvas.setBounds(0,0,856,480);
-        mainFrame.add(canvas);
-        mainFrame.pack();
-        mainFrame.setVisible(true);
+        canvas.setBounds(0,0,WIDTH,HEIGHT);
+        frame.add(canvas);
+        frame.pack();
+        frame.setVisible(true);
         canvas.createBufferStrategy(2);
         bs = canvas.getBufferStrategy();
         g = bs.getDrawGraphics();
@@ -42,13 +42,15 @@ public class Display
         canvas.addMouseListener(input);
         canvas.addMouseMotionListener(input);
         
+        frame.addComponentListener(input);
+        
         canvas.setFocusable(true);
         canvas.requestFocus();
         
     }
 
     public void drawFrameBuffer() {
-        drawImage(localBufferedImage);     
+        drawImage(frameBuffer);     
     }
     
     public void draw()
@@ -99,5 +101,14 @@ public class Display
     public Input getInput()
     {
     	return input;
+    }
+    
+    public void updateWidth()
+    {
+    	WIDTH = frame.getWidth();
+    	HEIGHT = frame.getHeight();
+    	canvas.setSize(WIDTH, HEIGHT);
+    	frameBuffer = new BufferedImage(WIDTH,HEIGHT,1);
+    	imageData = ((DataBufferInt) frameBuffer.getRaster().getDataBuffer()).getData();
     }
 }

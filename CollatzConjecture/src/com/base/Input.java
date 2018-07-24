@@ -1,4 +1,6 @@
 package com.base;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 /*
  * Copyright (c) 2014, Benny Bobaganoosh
  * All rights reserved.
@@ -38,12 +40,15 @@ import java.awt.event.MouseMotionListener;
  * @author Benny Bobaganoosh (thebennybox@gmail.com)
  */
 public class Input implements KeyListener, FocusListener,
-		MouseListener, MouseMotionListener {
+		MouseListener, MouseMotionListener, ComponentListener {
 	private boolean[] keys = new boolean[65536];
 	private boolean[] mouseButtons = new boolean[4];
 	private int mouseX = 0;
 	private int mouseY = 0;
+	private boolean resized = false;
 
+	
+	
 	/** Updates state when the mouse is dragged */
 	public void mouseDragged(MouseEvent e) {
 		mouseX = e.getX();
@@ -146,5 +151,39 @@ public class Input implements KeyListener, FocusListener,
 	 */
 	public int GetMouseY() {
 		return mouseY;
+	}
+
+	@Override
+	public void componentHidden(ComponentEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void componentMoved(ComponentEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void componentResized(ComponentEvent arg0) {
+		resized  = true;
+		
+	}
+
+	@Override
+	public void componentShown(ComponentEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public boolean getResized()
+	{
+		return resized;
+	}
+	
+	public void setResized(boolean value)
+	{
+		resized = value;
 	}
 }

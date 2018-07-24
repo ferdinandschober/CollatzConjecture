@@ -14,7 +14,7 @@ public class Engine implements Runnable
 	long lastTime;
 	long frameTime;
 	boolean logFramerate = false;
-	int statsUpdateRate = 1;
+	int statsUpdateRate = 100;
 	int frames;
 
 	private static int steps;
@@ -67,9 +67,6 @@ public class Engine implements Runnable
 
 	public void update()
 	{
-
-		if (true)
-		{
 			if (frames == 0)
 				System.out.println('\f');
 			display.shiftImage(scrollspeed);
@@ -91,8 +88,11 @@ public class Engine implements Runnable
 					display.draw(display.WIDTH - i, display.HEIGHT - 1 - (int) stepcount, 255, 255, 255);
 				counter++;
 			}
+		if(display.getInput().getResized())
+		{
+			display.getInput().setResized(false);
+			display.updateWidth();
 		}
-
 	}
 
 	public String stats()
