@@ -1,27 +1,27 @@
 package com.base;
 import java.util.Random;
 
-import com.base.display.CanvasDisplay;
+import com.base.display.Display;
 
 import java.util.ArrayList;
 
-public class CanvasEngine implements Runnable {
-    CanvasDisplay display = new CanvasDisplay();
+public class Engine implements Runnable {
+    Display display = new Display();
     double fps;
     long lastTime;
     long frameTime;
-    boolean logFramerate = true;
-    int statsUpdateRate = 1000;
+    boolean logFramerate = false;
+    int statsUpdateRate = 10;
     int frames;
 
     private static int steps;
     long counter = 1;
     private static int type = 'f';
     private long startTime;
-    private int scrollspeed = 2000;
+    private int scrollspeed = 20000;
     long maxstepcount;
     
-    public CanvasEngine()
+    public Engine()
     {
         Thread t = new Thread(this);
         t.start();

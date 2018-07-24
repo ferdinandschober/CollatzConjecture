@@ -2,7 +2,7 @@ package com.base.display;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
-public class CanvasDisplay
+public class Display
 {
     private Frame mainFrame;
     private Canvas canvas;
@@ -15,7 +15,7 @@ public class CanvasDisplay
     
     private static Font monoFont = new Font("Monospaced", Font.PLAIN, 14);
     
-    public CanvasDisplay()
+    public Display()
     {
         mainFrame = new Frame("Display");
         mainFrame.addWindowListener(new WindowAdapter() {
