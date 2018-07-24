@@ -71,7 +71,6 @@ public class Engine implements Runnable {
                     display.draw(display.WIDTH-i,display.HEIGHT-1-(int)stepcount,255,255,255);
                 counter++;
             }
-            //System.out.println(counter+": "+stepcount);
         }
 
     }
