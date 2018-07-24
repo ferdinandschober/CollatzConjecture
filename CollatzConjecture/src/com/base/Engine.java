@@ -91,7 +91,7 @@ public class Engine implements Runnable {
                 System.out.print(" "+s+" fps");
             }
         }
-        return s+" fps";
+        return s+" fps"+" ("+(int)(fps*scrollspeed)+" operations per second"+")";
     }
 
     public static long Collatz(long n)
