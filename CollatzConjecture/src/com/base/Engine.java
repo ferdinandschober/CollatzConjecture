@@ -11,7 +11,7 @@ public class Engine implements Runnable {
     long lastTime;
     long frameTime;
     boolean logFramerate = false;
-    int statsUpdateRate = 10;
+    int statsUpdateRate = 1;
     int frames;
 
     private static int steps;
@@ -34,7 +34,6 @@ public class Engine implements Runnable {
             try {
                 update();      
                 draw();
-                stats();
             } catch (Exception e) {
                 e.printStackTrace();
             }
