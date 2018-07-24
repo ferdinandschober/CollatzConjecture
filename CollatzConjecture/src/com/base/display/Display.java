@@ -1,17 +1,26 @@
 package com.base.display;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.*;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+
+import javax.swing.JFrame;
 
 import com.base.Input;
 public class Display
 {
-    private Frame frame;
+    private JFrame frame;
     private Canvas canvas;
     private Graphics g;
-    public static int WIDTH = 856;
-    public static int HEIGHT = 480;
-    BufferedImage frameBuffer = new BufferedImage(WIDTH,HEIGHT,1);
+    private int width = 856;
+    private int height = 480;
+
+	BufferedImage frameBuffer = new BufferedImage(getWidth(),getHeight(),1);
     int[] imageData = ((DataBufferInt) frameBuffer.getRaster().getDataBuffer()).getData();
     BufferStrategy bs;
     
@@ -21,16 +30,17 @@ public class Display
     
     public Display()
     {
-        frame = new Frame("Display");
+        frame = new JFrame("Display");
         frame.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent windowEvent){
                     System.exit(0);
                 }        
             });  
         canvas = new Canvas();
-        canvas.setBounds(0,0,WIDTH,HEIGHT);
+        canvas.setBounds(0,0,getWidth(),getHeight());
         frame.add(canvas);
         frame.pack();
+        updateSize();
         frame.setVisible(true);
         canvas.createBufferStrategy(2);
         bs = canvas.getBufferStrategy();
@@ -41,6 +51,7 @@ public class Display
         canvas.addFocusListener(input);
         canvas.addMouseListener(input);
         canvas.addMouseMotionListener(input);
+        canvas.addMouseWheelListener(input);
         
         frame.addComponentListener(input);
         
@@ -62,22 +73,22 @@ public class Display
 
     public void shiftImage(int a)
     {
-        for(int i = 0; i < imageData.length/WIDTH;i++)
-            for(int j = a; j < imageData.length/HEIGHT; j++)
-                imageData[i*WIDTH+j-a] = imageData[i*WIDTH+j];
-        for(int k = 0; k < HEIGHT; k++)
+        for(int i = 0; i < imageData.length/getWidth();i++)
+            for(int j = a; j < imageData.length/getHeight(); j++)
+                imageData[i*getWidth()+j-a] = imageData[i*getWidth()+j];
+        for(int k = 0; k < getHeight(); k++)
             for(int l = a; l > 0; l--)
-                draw(WIDTH-l,k,0,0,0);
+                draw(getWidth()-l,k,0,0,0);
     }
 
     public void drawImage(BufferedImage img)
     {
-        g.drawImage(img,0, 0, WIDTH, HEIGHT,null);
+        g.drawImage(img,0, 0, getWidth(), getHeight(),null);
     }
 
     public void draw(int x, int y,int color) {
-        if(y*WIDTH+x<imageData.length && x>=0 && y>=0)
-            imageData[y*WIDTH+x] = color;
+        if(y*width+x<imageData.length && x>=0 && y>=0)
+            imageData[y*getWidth()+x] = color;
     }
 
     public void draw(int x, int y,int r, int g, int b)
@@ -86,7 +97,7 @@ public class Display
     }
 
     public int getPixel(int x, int y) {
-        return imageData[y*WIDTH+x];
+        return imageData[y*getWidth()+x];
     }
 
     public void drawText(String s,int x,int y)
@@ -103,12 +114,28 @@ public class Display
     	return input;
     }
     
-    public void updateWidth()
+    public void updateSize()
     {
-    	WIDTH = frame.getWidth();
-    	HEIGHT = frame.getHeight();
-    	canvas.setSize(WIDTH, HEIGHT);
-    	frameBuffer = new BufferedImage(WIDTH,HEIGHT,1);
+    	setWidth(frame.getContentPane().getWidth());
+    	setHeight(frame.getContentPane().getHeight());
+    	canvas.setSize(getWidth(), getHeight());
+    	frameBuffer = new BufferedImage(getWidth(),getHeight(),1);
     	imageData = ((DataBufferInt) frameBuffer.getRaster().getDataBuffer()).getData();
     }
+    
+    public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
 }
