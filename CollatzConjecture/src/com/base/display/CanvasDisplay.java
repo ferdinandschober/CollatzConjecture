@@ -11,6 +11,7 @@ public class CanvasDisplay
     public static final int HEIGHT = 480;
     BufferedImage localBufferedImage = new BufferedImage(WIDTH,HEIGHT,1);
     int[] imageData = ((DataBufferInt) localBufferedImage.getRaster().getDataBuffer()).getData();
+    BufferStrategy bs;
     
     private static Font monoFont = new Font("Monospaced", Font.PLAIN, 14);
     
@@ -28,11 +29,19 @@ public class CanvasDisplay
         mainFrame.pack();
         mainFrame.setVisible(true);
         canvas.createBufferStrategy(2);
-        g = canvas.getGraphics();
+        bs = canvas.getBufferStrategy();
+        g = bs.getDrawGraphics();
     }
 
-    public void draw() {
-        drawImage(localBufferedImage);   
+    public void drawFrameBuffer() {
+        drawImage(localBufferedImage);     
+    }
+    
+    public void draw()
+    {
+    	 g.dispose();
+         canvas.getBufferStrategy().show();
+         g = canvas.getBufferStrategy().getDrawGraphics();
     }
 
     public void shiftImage(int a)

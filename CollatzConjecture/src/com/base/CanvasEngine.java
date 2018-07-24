@@ -20,6 +20,7 @@ public class CanvasEngine implements Runnable {
     private long startTime;
     private int scrollspeed = 2000;
     long maxstepcount;
+    
     public CanvasEngine()
     {
         Thread t = new Thread(this);
@@ -32,12 +33,19 @@ public class CanvasEngine implements Runnable {
         while (true) {
             try {
                 update();      
-                display.draw();
+                draw();
                 stats();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+    
+    public void draw()
+    {
+    	display.drawFrameBuffer();
+    	display.drawText(stats(), 10, 10);
+    	display.draw();
     }
 
     public void update() {
@@ -69,7 +77,7 @@ public class CanvasEngine implements Runnable {
 
     }
 
-    public void stats() {
+    public String stats() {
         frames++;
         String s = Double.toString(fps);
         if(s.length()>4)
@@ -83,7 +91,7 @@ public class CanvasEngine implements Runnable {
                 System.out.print(" "+s+" fps");
             }
         }
-        display.drawText(s+" fps", 10, 10);
+        return s+" fps";
     }
 
     public static long Collatz(long n)
