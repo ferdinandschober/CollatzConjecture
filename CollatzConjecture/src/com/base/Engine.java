@@ -22,7 +22,8 @@ public class Engine implements Runnable
 	private static int type = 'f';
 	private long startTime;
 	private int scrollspeed = 20000;
-	long maxstepcount;
+	long mostSteps;
+	private long longestSequence;
 
 	public Engine()
 	{
@@ -61,7 +62,8 @@ public class Engine implements Runnable
 	public void draw()
 	{
 		display.drawFrameBuffer();
-		display.drawText(stats(), 10, 10);
+		display.drawText(stats(), 10, 20);
+		display.drawText("number with longest sequence: " + longestSequence + " (" + mostSteps + " steps )", 10, 40);
 		display.draw();
 	}
 
@@ -74,11 +76,12 @@ public class Engine implements Runnable
 			for (int i = scrollspeed; i > 0; i--)
 			{
 				stepcount = CollatzSteps(counter);
-				if (stepcount > maxstepcount)
+				if (stepcount > mostSteps)
 				{
 					System.out.println();
 					System.out.print(counter + ": " + stepcount + " steps");
-					maxstepcount = stepcount;
+					longestSequence = counter;
+					mostSteps = stepcount;
 				}
 				if (type == 'f')
 				{
