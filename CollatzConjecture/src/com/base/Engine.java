@@ -1,50 +1,46 @@
 package com.base;
 
+import java.util.ArrayList;
+
 import com.base.display.Display;
 
 public class Engine implements Runnable
 {
 	Display display = new Display();
 	Calculator calculator = new Calculator();
-	private Stats stats = new Stats();
+	{
+		calculator.setResultBufferlength(display.getWidth());
+	}
+	Stats stats = new Stats();
 
-	private static int type = 'r';
-
-	int mouseWheelSensitivity = 1;
+	private static char graphType = 'f';
 
 	public Engine()
 	{
 		Thread t = new Thread(this);
+		t.setPriority(Thread.MAX_PRIORITY);
 		t.start();
 	}
 
 	public void run()
 	{
+		calculator.setPriority(9);
 		calculator.start();
 		while (true)
 		{
+			update();
+			draw();
 			try
 			{
-				if (!display.getInput().getMousePressed(1))
-				{
-					update();
-					draw();
-					try
-					{
-						Thread.sleep(16);
-					} catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-				} else
-					try
-					{
-						Thread.sleep(10);
-					} catch (Exception e)
-					{
-						e.printStackTrace();
-					}
+				Thread.sleep(5);
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 
+			try
+			{
+				Thread.sleep(10);
 			} catch (Exception e)
 			{
 				e.printStackTrace();
@@ -56,15 +52,23 @@ public class Engine implements Runnable
 	public void draw()
 	{
 		display.clearFrameBuffer();
-		for (int x = 0; x < display.getWidth(); x++)
-			switch (type)
+		ArrayList<Integer> results = calculator.getResults();
+		for (int x = 0; x < results.size(); x++)
+			switch (graphType)
 			{
 			case 'f':
-				for (int y = 0; y < calculator.getResults(x); y++)
-					display.draw(x, display.getHeight() - 1 - y, 255, 255, 255);
+			{
+				for (int y = 0; y <= results.get(x); y++)
+				{
+					display.draw(x, display.getHeight() - y, 255, 255, 255);
+				}
 				break;
-			default:
-				display.draw(x, display.getHeight() - 1 - calculator.getResults(x), 255, 255, 255);
+			}
+			case 'd':
+			{
+				display.draw(x, display.getHeight() - results.get(x), 255, 255, 255);
+				break;
+			}
 			}
 
 		display.drawFrameBuffer();
@@ -82,20 +86,29 @@ public class Engine implements Runnable
 		{
 			display.getInput().setResized(false);
 			display.updateSize();
+			calculator.setResultBufferlength(display.getWidth());
 		}
 		if (display.getInput().getMouseButtonsClicked(3))
 		{
 			display.getInput().setMouseButtonsClicked(3, false);
-			switch (type)
+			switch (graphType)
 			{
 			case 'f':
-				type = 'r';
+				graphType = 'r';
 				break;
 			default:
-				type = 'f';
+				graphType = 'f';
 				break;
 			}
 		}
+
+		if (display.getInput().getMousePressed(1))
+		{
+			if (calculator.isRunning())
+				calculator.pause_();
+		} else if (!calculator.isRunning())
+			calculator.resume_();
+
 		int mouseWheelRotation = display.getInput().getMouseWheelRotation();
 		display.getInput().setMouseWheelRotation(0);
 

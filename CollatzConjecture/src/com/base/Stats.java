@@ -27,7 +27,7 @@ public class Stats
 				System.out.print(" " + s + " fps");
 			}
 		}
-		stats = s + " fps" + " (" + (int) (fps /** scrollspeed*/) + " operations per second" + ")";
+		stats = s + " fps";
 	}
 	
 	public String getStats() { return stats; }

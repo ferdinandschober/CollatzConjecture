@@ -31,6 +31,7 @@ public class Display
     
     public Display()
     {
+    	System.setProperty("sun.awt.noerasebackground", "true");
         frame = new JFrame("Display");
         frame.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent windowEvent){
@@ -39,6 +40,7 @@ public class Display
             });  
         canvas = new Canvas();
         canvas.setBounds(0,0,getWidth(),getHeight());
+        canvas.setBackground(Color.BLACK);
         frame.add(canvas);
         frame.pack();
         updateSize();

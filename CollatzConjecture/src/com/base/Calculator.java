@@ -9,6 +9,8 @@ public class Calculator extends Thread
 	private long mostSteps;
 	private long longestSequence;
 	
+	private boolean running = true;
+	
 	private double delay = 0.5;
 
 	private int resultBufferlength = 1920;
@@ -18,13 +20,42 @@ public class Calculator extends Thread
 	@Override
 	public void run()
 	{
-		for (int i = 0; i < resultBufferlength; i++)
-			nextNumber();
-		while (true)
+		while(true)
+		if (running)
 		{
 			nextNumber();
+			if(results.size() > resultBufferlength)
 			results.remove(0);
+		} else
+			try
+			{
+				sleep(10);
+			} catch (InterruptedException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
+	
+	public void setResultBufferlength(int resultBufferlength)
+	{
+		this.resultBufferlength = resultBufferlength;
+		int diff = results.size()-resultBufferlength;
+		if(diff>0)
+		{
+			for(int i = 0; i < diff;i++)
+				results.remove(0);
 		}
+	}
+
+	public void pause_()
+	{
+		running = false;
+	}
+	
+	public void resume_()
+	{
+		running = true;
 	}
 
 	public void nextNumber()
@@ -84,12 +115,9 @@ public class Calculator extends Thread
 		this.longestSequence = longestSequence;
 	}
 
-	public Integer getResults(int x)
+	public ArrayList<Integer> getResults()
 	{
-		if (x < results.size())
-			return results.get(x);
-		else
-			return 0;
+		return results;
 	}
 	
 	public double getDelay()
@@ -100,5 +128,10 @@ public class Calculator extends Thread
 	public void setDelay(double delay)
 	{
 		this.delay = delay;
+	}
+
+	public boolean isRunning()
+	{
+		return running;
 	}
 }
