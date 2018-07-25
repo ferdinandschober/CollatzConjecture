@@ -8,6 +8,7 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.util.Arrays;
 
 import javax.swing.JFrame;
 
@@ -137,5 +138,10 @@ public class Display
 
 	public void setHeight(int height) {
 		this.height = height;
+	}
+	
+	public void clearFrameBuffer()
+	{
+		Arrays.fill(imageData, 0);
 	}
 }
