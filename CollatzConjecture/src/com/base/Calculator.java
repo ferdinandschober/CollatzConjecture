@@ -4,28 +4,41 @@ import java.util.ArrayList;
 
 public class Calculator extends Thread
 {
+	private double targetCps = 100.0;
+	
+
+	private long targetTime = (long)(1000000000.0/targetCps);
+	private long lastTime;
+	
+	
 	private int steps;
 	private long counter = 1;
 	private long mostSteps;
 	private long longestSequence;
 	
 	private boolean running = true;
-	
-	private double delay = 0.5;
 
 	private int resultBufferlength = 1920;
 
 	private static ArrayList<Integer> results = new ArrayList<Integer>();
+	static
+	{
+		for(int i = 0; i < 1000; i++)
+		{
+			results.add(0);
+		}
+	}
 
 	@Override
 	public void run()
 	{
+		lastTime = System.nanoTime();
 		while(true)
 		if (running)
 		{
-			nextNumber();
 			if(results.size() > resultBufferlength)
-			results.remove(0);
+				results.remove(0);
+			nextNumber();
 		} else
 			try
 			{
@@ -37,6 +50,11 @@ public class Calculator extends Thread
 			}
 	}
 	
+	public int getResultBufferlength()
+	{
+		return resultBufferlength;
+	}
+
 	public void setResultBufferlength(int resultBufferlength)
 	{
 		this.resultBufferlength = resultBufferlength;
@@ -60,6 +78,7 @@ public class Calculator extends Thread
 
 	public void nextNumber()
 	{
+		
 		steps = CollatzSteps(counter);
 		results.add(steps);
 		if (steps >= mostSteps)
@@ -68,13 +87,21 @@ public class Calculator extends Thread
 			mostSteps = steps;
 		}
 		counter++;
-		try
+		/*try
 		{
 			sleep((int)delay,(int)( (delay-(int)delay) * 1000000));
 		} catch (InterruptedException e)
 		{
 			e.printStackTrace();
-		}
+		}*/
+		while (System.nanoTime()-lastTime < targetTime)
+			{
+			try {
+				sleep(0,100);
+			}
+			catch(Exception e) {}
+			}
+		lastTime = System.nanoTime();
 	}
 
 	public static int CollatzSteps(long n)
@@ -119,19 +146,25 @@ public class Calculator extends Thread
 	{
 		return results;
 	}
-	
-	public double getDelay()
-	{
-		return delay;
-	}
-	
-	public void setDelay(double delay)
-	{
-		this.delay = delay;
-	}
 
 	public boolean isRunning()
 	{
 		return running;
+	}
+	
+	public void setTargetCps(double targetCps)
+	{
+		this.targetCps = targetCps;
+		targetTime = (long)(1000000000.0/targetCps);
+	}
+
+	public double getTargetCps()
+	{
+		return targetCps;
+	}
+	
+	public long getTargetTime()
+	{
+		return targetTime;
 	}
 }

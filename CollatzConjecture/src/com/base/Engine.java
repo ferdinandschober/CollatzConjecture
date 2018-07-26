@@ -1,5 +1,6 @@
 package com.base;
 
+import java.awt.Color;
 import java.util.ArrayList;
 
 import com.base.display.Display;
@@ -8,31 +9,38 @@ public class Engine implements Runnable
 {
 	Display display = new Display();
 	Calculator calculator = new Calculator();
+	Stats stats = new Stats();
+	
+	private long targetTime;
+	
 	{
 		calculator.setResultBufferlength(display.getWidth());
 	}
-	Stats stats = new Stats();
 
 	private static char graphType = 'f';
 
 	public Engine()
 	{
 		Thread t = new Thread(this);
-		t.setPriority(Thread.MAX_PRIORITY);
 		t.start();
 	}
 
 	public void run()
 	{
-		calculator.setPriority(9);
+		calculator.setPriority(5);
 		calculator.start();
 		while (true)
 		{
+			targetTime = 16666666;
 			update();
 			draw();
 			try
 			{
-				Thread.sleep(5);
+				double frameTime = 1.0/stats.fps;
+				frameTime *= 1000000000;
+				long delta = (targetTime-(long)frameTime)/1000000;
+				System.out.println(delta);
+				Thread.sleep(delta > 0 ? delta : 0);
 			} catch (Exception e)
 			{
 				e.printStackTrace();
@@ -53,30 +61,30 @@ public class Engine implements Runnable
 	{
 		display.clearFrameBuffer();
 		ArrayList<Integer> results = calculator.getResults();
-		for (int x = 0; x < results.size(); x++)
+		for (int x = 0; x < calculator.getResultBufferlength(); x++)
 			switch (graphType)
 			{
 			case 'f':
 			{
 				for (int y = 0; y <= results.get(x); y++)
 				{
-					display.draw(x, display.getHeight() - y, 255, 255, 255);
+					display.draw(x, display.getHeight() - y, Color.WHITE);
 				}
 				break;
 			}
 			case 'd':
 			{
-				display.draw(x, display.getHeight() - results.get(x), 255, 255, 255);
+				display.draw(x, display.getHeight() - results.get(x),Color.WHITE);
 				break;
 			}
 			}
 
 		display.drawFrameBuffer();
-		display.drawText(stats.getStats(), 10, 20);
-		display.drawText("delay between calculations: " + calculator.getDelay() + " ms", 10, 40);
+		display.drawText(stats.getStats(), 10, 20,Color.GREEN);
+		display.drawText("delay between calculations: " + calculator.getTargetCps() + " ms", 10, 40, Color.GREEN);
 		display.drawText("number with longest sequence: " + calculator.getLongestSequence() + " ("
-				+ calculator.getMostSteps() + " steps )", 10, 60);
-		display.drawText("current number: " + calculator.getCounter(), 10, 80);
+				+ calculator.getMostSteps() + " steps )", 10, 60, Color.GREEN);
+		display.drawText("current number: " + calculator.getCounter(), 10, 80, Color.GREEN);
 		display.draw();
 	}
 
@@ -94,7 +102,7 @@ public class Engine implements Runnable
 			switch (graphType)
 			{
 			case 'f':
-				graphType = 'r';
+				graphType = 'd';
 				break;
 			default:
 				graphType = 'f';
@@ -110,17 +118,21 @@ public class Engine implements Runnable
 			calculator.resume_();
 
 		int mouseWheelRotation = display.getInput().getMouseWheelRotation();
-		display.getInput().setMouseWheelRotation(0);
+				display.getInput().setMouseWheelRotation(0);	
+				calculator.setTargetCps(calculator.getTargetCps()+mouseWheelRotation * getMouseWheelSensitivity(calculator.getTargetCps(),mouseWheelRotation));
 
-		double delaynew = calculator.getDelay();
-		if (mouseWheelRotation < 0)
-			delaynew -= calculator.getDelay() > 1 ? 1 : calculator.getDelay() > 0.1 ? 0.1 : 0.01;
-		else if (mouseWheelRotation > 0)
-			delaynew += calculator.getDelay() >= 1 ? 1 : calculator.getDelay() >= 0.1 ? 0.1 : 0.01;
-
-		delaynew = (double) Math.round(delaynew * 100) / 100;
-		if (delaynew >= 0)
-			calculator.setDelay(delaynew);
 		stats.update();
+	}
+
+	private int getMouseWheelSensitivity(double targetCps,int mouseWheelRotation)
+	{
+		if(mouseWheelRotation > 0)
+		{
+			return targetCps>=100000?100000:targetCps>=10000?10000:targetCps>=1000?1000:targetCps>=100?100:targetCps>=10?10:1;
+		}
+		else 
+		{
+			return targetCps>100000?100000:targetCps>10000?10000:targetCps>1000?1000:targetCps>100?100:targetCps>10?10:1;
+		}
 	}
 }

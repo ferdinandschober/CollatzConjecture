@@ -20,6 +20,8 @@ public class Display
     private Graphics g;
     private int width = 856;
     private int height = 480;
+    
+    private Color backgroundcolor = Color.BLACK;
 
 	BufferedImage frameBuffer = new BufferedImage(getWidth(),getHeight(),1);
     int[] imageData = ((DataBufferInt) frameBuffer.getRaster().getDataBuffer()).getData();
@@ -40,12 +42,12 @@ public class Display
             });  
         canvas = new Canvas();
         canvas.setBounds(0,0,getWidth(),getHeight());
-        canvas.setBackground(Color.BLACK);
+        canvas.setBackground(backgroundcolor);
         frame.add(canvas);
         frame.pack();
         updateSize();
         frame.setVisible(true);
-        canvas.createBufferStrategy(2);
+        canvas.createBufferStrategy(3);
         bs = canvas.getBufferStrategy();
         g = bs.getDrawGraphics();
         
@@ -90,7 +92,7 @@ public class Display
     }
 
     public void draw(int x, int y,int color) {
-        if(y*width+x<imageData.length && x>=0 && y>=0)
+        if(x < getWidth() && y < getHeight() && x>=0 && y>=0)
             imageData[y*getWidth()+x] = color;
     }
 
@@ -98,14 +100,19 @@ public class Display
     {
         draw(x,y,r<<16|g<<8|b);
     }
+    
+    public void draw(int x, int y, Color c)
+    {
+    	draw(x,y,c.getRGB());
+    }
 
     public int getPixel(int x, int y) {
         return imageData[y*getWidth()+x];
     }
 
-    public void drawText(String s,int x,int y)
+    public void drawText(String s,int x,int y,Color c)
     {
-        g.setColor(Color.GREEN);
+        g.setColor(c);
         g.setFont(monoFont);  
         if(s!=null){
             g.drawString(s, x, y);
@@ -144,6 +151,6 @@ public class Display
 	
 	public void clearFrameBuffer()
 	{
-		Arrays.fill(imageData, 0);
+		Arrays.fill(imageData, backgroundcolor.getRed()<<16|backgroundcolor.getGreen()<<8|backgroundcolor.getBlue());
 	}
 }
